@@ -49,7 +49,7 @@ class App extends React.Component {
                 <Name>
                     <Content
                         onTouchStart={() => this.setState({ touched: true })}
-                        onTouchEnd={() => this.setState({ touched: false })}
+                        onTouchCancel={() => this.setState({ touched: false })}
                     >
                         <HtmlTag touched={this.state.touched}>{'<'}</HtmlTag>
                             matias
