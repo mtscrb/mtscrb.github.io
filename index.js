@@ -40,6 +40,7 @@ const Content = styled.div`
     font-family: hack;
     font-size: ${4*10}px;
     color: #ECEFF1;
+    cursor: pointer;
     &:hover ${HtmlTag} {
         opacity: 1;
     }
@@ -49,20 +50,18 @@ class App extends React.Component {
     state = {
         touched: false,
     }
-    render() {
-        return (
-            <Root>
-                <Content
-                    onTouchStart={() => this.setState({ touched: true })}
-                    onTouchEnd={() => this.setState({ touched: false })}
-                >
-                    <HtmlTag touched={this.state.touched} opened />
-                    <Name>matias</Name>
-                    <HtmlTag touched={this.state.touched} />
-                </Content>
-            </Root>
-        );
-    }
+    render = () => (
+        <Root>
+            <Content
+                onTouchStart={() => this.setState({ touched: true })}
+                onTouchEnd={() => this.setState({ touched: false })}
+            >
+                <HtmlTag touched={this.state.touched} opened />
+                <Name>matias</Name>
+                <HtmlTag touched={this.state.touched} />
+            </Content>
+        </Root>
+    )
 }
 
 ReactDOM.render(
