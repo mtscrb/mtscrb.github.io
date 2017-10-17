@@ -3,6 +3,23 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+      html, body, div, span, a, p, ul, li, h1, code, nav {
+        margin: 0;
+        border: 0;
+        padding: 0;
+        box-sizing: inherit;
+        font: inherit;
+        text-decoration: inherit;
+        text-align: inherit;
+        color: inherit;
+        background: transparent;
+      }
+      /*pass window height (w/o scroll bars) down to react app, note can't use vh becasue that
+      includes scroll bars and mobile browser footer, etc so doesn't give viewable area*/
+      html, body, #root { height: 100%; }
+    </style>
     <title>Matias</title>
 
     <!-- start favicon -->
@@ -23,6 +40,7 @@
     <link rel="manifest" href="http://favicon.rafrex.com/green-grid-144-168-192/manifest.json">
     <link rel="mask-icon" href="http://favicon.rafrex.com/green-grid-144-168-192/safari-pinned-tab.svg" color="#00a800">
     <link rel="shortcut icon" href="http://favicon.rafrex.com/green-grid-144-168-192/favicon.ico">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/font-hack/2.020/css/hack-extended.min.css">
     <meta name="msapplication-TileColor" content="#000000">
     <meta name="msapplication-TileImage" content="http://favicon.rafrex.com/green-grid-144-168-192/mstile-144x144.png">
     <meta name="msapplication-config" content="http://favicon.rafrex.com/green-grid-144-168-192/browserconfig.xml">
