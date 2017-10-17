@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import styled from 'styled-components';
+import { Transition } from 'react-transition-group'
 
 const grid = 4;
 
@@ -18,24 +19,29 @@ const Root = styled.div`
 
 const Name = styled.div`
     display: inline-flex;
-    font-family: hack;
-    font-size: ${4*10}px;
-    color: #ECEFF1;
+    margin-right: ${grid*2}px;
 `
 
 const HtmlTag = styled.span`
     display: inline-flex;
-    visibility: ${props => props.touched ? 'visible' : 'hidden'};
+    opacity: ${props => props.touched ? 1 : 0};
+    transition: opacity 200ms ease-in;
     font-family: hack;
     font-size: ${4*10}px;
     color: #82AAFF;
+    &:after {
+        content: "${props => props.opened ? '<' : '/>'}"
+    }
 `
 
 const Content = styled.div`
     display: inline-flex;
     user-select: none;
+    font-family: hack;
+    font-size: ${4*10}px;
+    color: #ECEFF1;
     &:hover ${HtmlTag} {
-        visibility: visible;
+        opacity: 1;
     }
 `
 
@@ -46,16 +52,14 @@ class App extends React.Component {
     render() {
         return (
             <Root>
-                <Name>
-                    <Content
-                        onTouchStart={() => this.setState({ touched: true })}
-                        onTouchCancel={() => this.setState({ touched: false })}
-                    >
-                        <HtmlTag touched={this.state.touched}>{'<'}</HtmlTag>
-                            matias
-                        <HtmlTag touched={this.state.touched}>{'/>'}</HtmlTag>
-                    </Content>
-                </Name>
+                <Content
+                    onTouchStart={() => this.setState({ touched: true })}
+                    onTouchEnd={() => this.setState({ touched: false })}
+                >
+                    <HtmlTag touched={this.state.touched} opened />
+                    <Name>matias</Name>
+                    <HtmlTag touched={this.state.touched} />
+                </Content>
             </Root>
         );
     }
