@@ -25,7 +25,7 @@ const Name = styled.div`
 
 const HtmlTag = styled.span`
     display: inline-flex;
-    visibility: hidden;
+    visibility: ${props => props.touched ? 'visible' : 'hidden'};
     font-family: hack;
     font-size: ${4*10}px;
     color: #82AAFF;
@@ -33,20 +33,27 @@ const HtmlTag = styled.span`
 
 const Content = styled.div`
     display: inline-flex;
+    user-select: none;
     &:hover ${HtmlTag} {
         visibility: visible;
     }
 `
 
 class App extends React.Component {
+    state = {
+        touched: false,
+    }
     render() {
         return (
             <Root>
                 <Name>
-                    <Content>
-                        <HtmlTag>{'<'}</HtmlTag>
+                    <Content
+                        onTouchStart={() => this.setState({ touched: true })}
+                        onTouchEnd={() => this.setState({ touched: false })}
+                    >
+                        <HtmlTag touched={this.state.touched}>{'<'}</HtmlTag>
                             matias
-                        <HtmlTag>{'/>'}</HtmlTag>
+                        <HtmlTag touched={this.state.touched}>{'/>'}</HtmlTag>
                     </Content>
                 </Name>
             </Root>
