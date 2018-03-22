@@ -1,3 +1,11 @@
 {
-  "presets": ["env", "react", "stage-1"]
+  "presets": [
+    "es2015",
+    "stage-1",
+    "react"
+  ],
+  "plugins": [
+    "transform-object-assign",
+    "transform-flow-strip-types"
+  ]
 }
