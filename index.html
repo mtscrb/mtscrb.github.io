@@ -1,136 +1,135 @@
 <html>
-    <head>
-        <title>Wasap</title>
-        <script src="https://unpkg.com/react@16.4.2/umd/react.production.min.js"></script>
-        <script src="https://unpkg.com/react-dom@16.4.2/umd/react-dom.production.min.js"></script>
-        <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
-        <script src="https://unpkg.com/styled-components/dist/styled-components.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.min.js"></script>
-    </head>
-    <body>
-        <div id="root"></div>
-        <script type="text/babel">
-          window.onload = function() {
-            const styled = window.styled.default;
-            const pixelSize = 48;
-            const numberOfRows = 20;
-            const numberOfColumns = 20;
+  <head>
+    <title>Wasap</title>
+    <script src="https://unpkg.com/react@16.4.2/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@16.4.2/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      window.onload = function() {
+        const pixelSize = 48;
+        const numberOfRows = 20;
+        const numberOfColumns = 20;
 
-            const Grid = styled.div`
-              display: inline-grid;
-              grid-template-columns: repeat(${numberOfColumns}, ${pixelSize}px);
-              grid-template-rows: repeat(${numberOfRows}, ${pixelSize}px);
-            `;
+        const availableColors = [
+          "tomato",
+          "gold",
+          "royalblue",
+          "violet",
+          "springgreen",
+          "darkturquoise"
+        ];
 
-            const GridItem = styled.div`
-              background-color: ${props => props.color || 'black'};
-              line-height: ${pixelSize}px;
-              text-align: center;
-            `;
-
-            const Container = styled.div`
-              flex-direction: column;
-              display: flex;
-              justify-content: center;
-              height: 100%;
-              align-items: center;
-            `;
-
-            const Options = styled.div`
-              padding-top: ${pixelSize}px;
-              display: flex;
-              width: ${numberOfColumns * pixelSize}px;
-              height: ${pixelSize * 3}px;
-            `;
-
-            const Option = styled.div`
-              background-color: ${props => props.color};
-              width: 100%;
-              height: 100%;
-              cursor: pointer;
-            `;
-
-            const availableColors = [
-              'tomato',
-              'gold',
-              'royalblue',
-              'violet',
-              'springgreen',
-              'darkturquoise'
-            ];
-
-            class Game extends React.Component {
-              constructor(props) {
-                super(props);
-                const colors = _.range(numberOfRows * numberOfColumns).map(
-                  () => availableColors[_.random(availableColors.length - 1)]
-                );
-                colors[0] = availableColors[0];
-                colors[1] = availableColors[_.random(1, availableColors.length - 1)];
-                colors[numberOfColumns] =
-                  availableColors[_.random(1, availableColors.length - 1)];
-                const markedTiles = _.range(numberOfRows * numberOfColumns).map(() => false);
-                markedTiles[0] = true;
-                this.state = {
-                  colors,
-                  selectedColor: colors[0],
-                  markedTiles
-                };
-              }
-
-              selectNewColor(newColor) {
-                const { markedTiles, colors } = this.state;
-                this.setState({
-                  selectedColor: newColor,
-                  colors: colors.map(
-                    (color, index) => (markedTiles[index] ? newColor : color)
-                  )
-                });
-              }
-
-              componentDidUpdate(prevProps, prevState) {
-                const { markedTiles, colors, selectedColor } = this.state;
-                if (
-                  prevState.selectedColor !== selectedColor ||
-                  !_.isEqual(prevState.markedTiles, markedTiles)
-                ) {
-                  this.setState({
-                    markedTiles: markedTiles.map(
-                      (marked, index) =>
-                        marked ||
-                        (((markedTiles[index + 1] && (index + 1) % numberOfRows) ||
-                          (markedTiles[index - 1] && index % numberOfRows) ||
-                          markedTiles[index + numberOfRows] ||
-                          markedTiles[index - numberOfRows]) &&
-                          selectedColor === colors[index])
-                    )
-                  });
-                }
-              }
-
-              render() {
-                return (
-                  <Container>
-                    <Grid>
-                      {this.state.colors.map((color, index) => (
-                        <GridItem color={color} key={`${color}-${index}`}>
-                          {this.state.markedTiles[index] ? '🍊' : null}
-                        </GridItem>
-                      ))}
-                    </Grid>
-                    <Options>
-                      {availableColors.map(color => (
-                        <Option color={color} onClick={() => this.selectNewColor(color)} />
-                      ))}
-                    </Options>
-                  </Container>
-                );
-              }
+        class Game extends React.Component {
+          constructor(props) {
+            super(props);
+            const colors = _.range(numberOfRows * numberOfColumns).map(
+              () => availableColors[_.random(availableColors.length - 1)]
+            );
+            colors[0] = availableColors[0];
+            colors[1] =
+              availableColors[_.random(1, availableColors.length - 1)];
+            colors[numberOfColumns] =
+              availableColors[_.random(1, availableColors.length - 1)];
+            const markedTiles = _.range(numberOfRows * numberOfColumns).map(
+              () => false
+            );
+            markedTiles[0] = true;
+            this.state = {
+              colors,
+              selectedColor: colors[0],
+              markedTiles
+            };
+          }
+          selectNewColor(newColor) {
+            const { markedTiles, colors } = this.state;
+            this.setState({
+              selectedColor: newColor,
+              colors: colors.map((color, index) =>
+                markedTiles[index] ? newColor : color
+              )
+            });
+          }
+          componentDidUpdate(prevProps, prevState) {
+            const { markedTiles, colors, selectedColor } = this.state;
+            if (
+              prevState.selectedColor !== selectedColor ||
+              !_.isEqual(prevState.markedTiles, markedTiles)
+            ) {
+              this.setState({
+                markedTiles: markedTiles.map(
+                  (marked, index) =>
+                    marked ||
+                    (((markedTiles[index + 1] && (index + 1) % numberOfRows) ||
+                      (markedTiles[index - 1] && index % numberOfRows) ||
+                      markedTiles[index + numberOfRows] ||
+                      markedTiles[index - numberOfRows]) &&
+                      selectedColor === colors[index])
+                )
+              });
             }
-
-            const rootElement = document.getElementById('root');
-            ReactDOM.render(<Game />, rootElement);
-          };
-      </script>
-    </body>
+          }
+          render() {
+            return (
+              <div
+                style={{
+                  "flex-direction": "column",
+                  display: "flex",
+                  "justify-content": "center",
+                  height: "100%",
+                  "align-items": "center"
+                }}
+              >
+                <div
+                  style={{
+                    display: "inline-grid",
+                    "grid-template-columns": `repeat(${numberOfColumns}, ${pixelSize}px)`,
+                    "grid-template-rows": `repeat(${numberOfRows}, ${pixelSize}px)`
+                  }}
+                >
+                  {this.state.colors.map((color, index) => (
+                    <div
+                      style={{
+                        "background-color": `${color || "black"}`,
+                        "line-height": `${pixelSize}px`,
+                        "text-align": "center"
+                      }}
+                      key={`${color}-${index}`}
+                    >
+                      {this.state.markedTiles[index] ? "🍊" : null}
+                    </div>
+                  ))}
+                </div>
+                <div
+                  style={{
+                    "padding-top": `${pixelSize}px`,
+                    display: "flex",
+                    width: `${numberOfColumns * pixelSize}px`,
+                    height: `${pixelSize * 3}px`
+                  }}
+                >
+                  {availableColors.map(color => (
+                    <div
+                      style={{
+                        "background-color": `${color}`,
+                        width: "100%",
+                        height: "100%",
+                        cursor: "pointer"
+                      }}
+                      onClick={() => this.selectNewColor(color)}
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          }
+        }
+        const rootElement = document.getElementById("root");
+        ReactDOM.render(<Game />, rootElement);
+      };
+    </script>
+  </body>
 </html>
