@@ -1,8 +1,8 @@
 <html>
   <head>
     <title>Wasap</title>
-    <script src="https://unpkg.com/react@16.4.2/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@16.4.2/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/react@16.8.1/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16.8.1/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.min.js"></script>
   </head>
@@ -23,110 +23,97 @@
           "darkturquoise"
         ];
 
-        class Game extends React.Component {
-          constructor(props) {
-            super(props);
-            const colors = _.range(numberOfRows * numberOfColumns).map(
-              () => availableColors[_.random(availableColors.length - 1)]
-            );
-            colors[0] = availableColors[0];
-            colors[1] =
-              availableColors[_.random(1, availableColors.length - 1)];
-            colors[numberOfColumns] =
-              availableColors[_.random(1, availableColors.length - 1)];
-            const markedTiles = _.range(numberOfRows * numberOfColumns).map(
-              () => false
-            );
-            markedTiles[0] = true;
-            this.state = {
-              colors,
-              selectedColor: colors[0],
-              markedTiles
-            };
+        const Game = () => {
+          const initialColors = _.range(numberOfRows * numberOfColumns).map(
+            () => availableColors[_.random(availableColors.length - 1)]
+          );
+          initialColors[0] = availableColors[0];
+          initialColors[1] =
+            availableColors[_.random(1, availableColors.length - 1)];
+          initialColors[numberOfColumns] =
+            availableColors[_.random(1, availableColors.length - 1)];
+          const initialMarkedTiles = _.range(numberOfRows * numberOfColumns).map(
+            () => false
+          );
+          initialMarkedTiles[0] = true;
+
+          const [colors, setColors] = React.useState(initialColors);
+          const [selectedColor, setSelectedColor] = React.useState(colors[0]);
+          const [markedTiles, setMarkedTiles] = React.useState(initialMarkedTiles);
+
+          const selectNewColor = newColor => {
+            setSelectedColor(newColor);
+            setColors(colors.map((color, index) =>
+              markedTiles[index] ? newColor : color
+            ));
           }
-          selectNewColor(newColor) {
-            const { markedTiles, colors } = this.state;
-            this.setState({
-              selectedColor: newColor,
-              colors: colors.map((color, index) =>
-                markedTiles[index] ? newColor : color
-              )
-            });
-          }
-          componentDidUpdate(prevProps, prevState) {
-            const { markedTiles, colors, selectedColor } = this.state;
-            if (
-              prevState.selectedColor !== selectedColor ||
-              !_.isEqual(prevState.markedTiles, markedTiles)
-            ) {
-              this.setState({
-                markedTiles: markedTiles.map(
-                  (marked, index) =>
-                    marked ||
-                    (((markedTiles[index + 1] && (index + 1) % numberOfRows) ||
-                      (markedTiles[index - 1] && index % numberOfRows) ||
-                      markedTiles[index + numberOfRows] ||
-                      markedTiles[index - numberOfRows]) &&
-                      selectedColor === colors[index])
-                )
-              });
-            }
-          }
-          render() {
-            return (
+
+          React.useEffect(() =>
+            setMarkedTiles(markedTiles.map(
+              (marked, index) =>
+                marked ||
+                (((markedTiles[index + 1] && (index + 1) % numberOfRows) ||
+                  (markedTiles[index - 1] && index % numberOfRows) ||
+                  markedTiles[index + numberOfRows] ||
+                  markedTiles[index - numberOfRows]) &&
+                  selectedColor === colors[index])
+            ))
+          , [selectedColor, markedTiles]);
+
+          return (
+            <div
+              style={{
+                "flex-direction": "column",
+                display: "flex",
+                "justify-content": "center",
+                height: "100%",
+                "align-items": "center",
+              }}
+            >
               <div
                 style={{
-                  "flex-direction": "column",
-                  display: "flex",
-                  "justify-content": "center",
-                  height: "100%",
-                  "align-items": "center"
+                  display: "inline-grid",
+                  "grid-template-columns": `repeat(${numberOfColumns}, ${pixelSize}px)`,
+                  "grid-template-rows": `repeat(${numberOfRows}, ${pixelSize}px)`
                 }}
               >
-                <div
-                  style={{
-                    display: "inline-grid",
-                    "grid-template-columns": `repeat(${numberOfColumns}, ${pixelSize}px)`,
-                    "grid-template-rows": `repeat(${numberOfRows}, ${pixelSize}px)`
-                  }}
-                >
-                  {this.state.colors.map((color, index) => (
-                    <div
-                      style={{
-                        "background-color": `${color || "black"}`,
-                        "line-height": `${pixelSize}px`,
-                        "text-align": "center"
-                      }}
-                      key={`${color}-${index}`}
-                    >
-                      {this.state.markedTiles[index] ? "🍊" : null}
-                    </div>
-                  ))}
-                </div>
-                <div
-                  style={{
-                    "padding-top": `${pixelSize}px`,
-                    display: "flex",
-                    width: `${numberOfColumns * pixelSize}px`,
-                    height: `${pixelSize * 3}px`
-                  }}
-                >
-                  {availableColors.map(color => (
-                    <div
-                      style={{
-                        "background-color": `${color}`,
-                        width: "100%",
-                        height: "100%",
-                        cursor: "pointer"
-                      }}
-                      onClick={() => this.selectNewColor(color)}
-                    />
-                  ))}
-                </div>
+                {colors.map((color, index) => (
+                  <div
+                    style={{
+                      "background-color": `${color || "black"}`,
+                      "line-height": `${pixelSize}px`,
+                      "text-align": "center"
+                    }}
+                    key={`${color}-${index}`}
+                  >
+                    {markedTiles[index] ? "" : null}
+                  </div>
+                ))}
               </div>
-            );
-          }
+              <div
+                style={{
+                  "padding-top": `${pixelSize}px`,
+                  display: "flex",
+                  width: `${numberOfColumns * pixelSize}px`,
+                  height: `${pixelSize * 3}px`
+                }}
+              >
+                {availableColors.map(color => (
+                  <div
+                    style={{
+                      "background-color": `${color}`,
+                      width: "100%",
+                      height: "100%",
+                      cursor: "pointer"
+                    }}
+                    onClick={() => selectNewColor(color)}
+                  />
+                ))}
+              </div>
+            </div>
+          );
         }
+
         const rootElement = document.getElementById("root");
         ReactDOM.render(<Game />, rootElement);
       };
