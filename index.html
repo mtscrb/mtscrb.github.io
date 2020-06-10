@@ -1,122 +1,96 @@
 <html>
   <head>
     <title>Wasap</title>
-    <script src="https://unpkg.com/react@16.8.1/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@16.8.1/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.min.js"></script>
   </head>
   <body>
     <div id="root"></div>
     <script type="text/babel">
-      window.onload = function() {
-        const pixelSize = 48;
-        const numberOfRows = 20;
-        const numberOfColumns = 20;
+      const availableColors = [
+        'tomato',
+        'gold',
+        'royalblue',
+        'violet',
+        'springgreen',
+        'darkturquoise'
+      ];
 
-        const availableColors = [
-          "tomato",
-          "gold",
-          "royalblue",
-          "violet",
-          "springgreen",
-          "darkturquoise"
-        ];
+      const gameSize = 10;
+      const numberOfTiles = gameSize * gameSize;
+      const markedTiles = Array(numberOfTiles).fill(false);
+      const colors = Array(numberOfTiles)
+        .fill()
+        .map(
+          () => availableColors[Math.floor(Math.random() * availableColors.length)]
+        );
 
-        const Game = () => {
-          const initialColors = _.range(numberOfRows * numberOfColumns).map(
-            () => availableColors[_.random(availableColors.length - 1)]
-          );
-          initialColors[0] = availableColors[0];
-          initialColors[1] =
-            availableColors[_.random(1, availableColors.length - 1)];
-          initialColors[numberOfColumns] =
-            availableColors[_.random(1, availableColors.length - 1)];
-          const initialMarkedTiles = _.range(numberOfRows * numberOfColumns).map(
-            () => false
-          );
-          initialMarkedTiles[0] = true;
+      // Set starting tile to be different than the ones around it
+      colors[0] = availableColors.filter(
+        color => ![colors[1], colors[gameSize]].includes(color)
+      )[0];
 
-          const [colors, setColors] = React.useState(initialColors);
-          const [selectedColor, setSelectedColor] = React.useState(colors[0]);
-          const [markedTiles, setMarkedTiles] = React.useState(initialMarkedTiles);
+      markedTiles[0] = true;
 
-          const selectNewColor = newColor => {
-            setSelectedColor(newColor);
-            setColors(colors.map((color, index) =>
-              markedTiles[index] ? newColor : color
-            ));
-          }
+      let selectedColor = colors[0];
 
-          React.useEffect(() =>
-            setMarkedTiles(markedTiles.map(
-              (marked, index) =>
+      const colorsContainer = document.querySelector('#colors');
+      const grid = document.querySelector('#grid');
+      let counter = 0;
+      const counterNumberElement = document.querySelector('#counter-number');
+      const tiles = [];
+
+      colors.forEach((color, index) => {
+        const tile = document.createElement('div');
+        tile.style = `
+          background-color: ${color};
+          line-height: 30px;
+          text-align: center;
+        `;
+        tiles.push(tile);
+        grid.appendChild(tile);
+      });
+
+      tiles[0].innerHTML = '🍺';
+
+      console.log('marked tiles', markedTiles.filter(v => v).length);
+
+      availableColors.forEach(color => {
+        const colorOption = document.createElement('div');
+        colorOption.style = `
+          background-color: ${color};
+          width: 100%;
+          height: 100%;
+          cursor: pointer;
+        `;
+        colorOption.addEventListener('click', () => {
+          counter++;
+          counterNumberElement.innerHTML = counter;
+
+          if (selectedColor !== color) {
+            selectedColor = color;
+            markedTiles.forEach((marked, index) => {
+              const isMarked =
                 marked ||
-                (((markedTiles[index + 1] && (index + 1) % numberOfRows) ||
-                  (markedTiles[index - 1] && index % numberOfRows) ||
-                  markedTiles[index + numberOfRows] ||
-                  markedTiles[index - numberOfRows]) &&
-                  selectedColor === colors[index])
-            ))
-          , [selectedColor, markedTiles]);
+                (((markedTiles[index + 1] && (index + 1) % gameSize) ||
+                  (markedTiles[index - 1] && index % gameSize) ||
+                  markedTiles[index + gameSize] ||
+                  markedTiles[index - gameSize]) &&
+                  selectedColor === colors[index]);
 
-          return (
-            <div
-              style={{
-                "flex-direction": "column",
-                display: "flex",
-                "justify-content": "center",
-                height: "100%",
-                "align-items": "center",
-              }}
-            >
-              <div
-                style={{
-                  display: "inline-grid",
-                  "grid-template-columns": `repeat(${numberOfColumns}, ${pixelSize}px)`,
-                  "grid-template-rows": `repeat(${numberOfRows}, ${pixelSize}px)`
-                }}
-              >
-                {colors.map((color, index) => (
-                  <div
-                    style={{
-                      "background-color": `${color || "black"}`,
-                      "line-height": `${pixelSize}px`,
-                      "text-align": "center"
-                    }}
-                    key={`${color}-${index}`}
-                  >
-                    {markedTiles[index] ? "" : null}
-                  </div>
-                ))}
-              </div>
-              <div
-                style={{
-                  "padding-top": `${pixelSize}px`,
-                  display: "flex",
-                  width: `${numberOfColumns * pixelSize}px`,
-                  height: `${pixelSize * 3}px`
-                }}
-              >
-                {availableColors.map(color => (
-                  <div
-                    style={{
-                      "background-color": `${color}`,
-                      width: "100%",
-                      height: "100%",
-                      cursor: "pointer"
-                    }}
-                    onClick={() => selectNewColor(color)}
-                  />
-                ))}
-              </div>
-            </div>
-          );
-        }
+              if (isMarked) {
+                markedTiles[index] = true;
+                tiles[index].innerHTML = '🍺';
+                tiles[index].style['background-color'] = color;
+              }
+            });
+          }
+          console.log('marked tiles', markedTiles.filter(v => v).length);
 
-        const rootElement = document.getElementById("root");
-        ReactDOM.render(<Game />, rootElement);
-      };
+          if (markedTiles.filter(v => v).length === tiles.length) {
+          }
+        });
+        colorsContainer.appendChild(colorOption);
+      });
+
     </script>
   </body>
 </html>
