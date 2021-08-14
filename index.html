@@ -1,96 +1,46 @@
+
+<!DOCTYPE html>
 <html>
   <head>
-    <title>Wasap</title>
+    <meta charset="utf-8">
+    <title>mtscrb</title>
+    <style>
+      body {
+        /* text-align: center; */
+        font-size: 33px;
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="container"></div>
+
+    <script src="https://unpkg.com/react@15/dist/react.min.js"></script>
+    <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.24/browser.min.js"></script>
     <script type="text/babel">
-      const availableColors = [
-        'tomato',
-        'gold',
-        'royalblue',
-        'violet',
-        'springgreen',
-        'darkturquoise'
-      ];
+      const firstEmojiCode = 8986;
+      const lastEmojiCode = 129510;
 
-      const gameSize = 10;
-      const numberOfTiles = gameSize * gameSize;
-      const markedTiles = Array(numberOfTiles).fill(false);
-      const colors = Array(numberOfTiles)
-        .fill()
-        .map(
-          () => availableColors[Math.floor(Math.random() * availableColors.length)]
-        );
+      const RandomEmojiScreen = () => {
+        const [emojiList, setEmojiList] = React.useState()
 
-      // Set starting tile to be different than the ones around it
-      colors[0] = availableColors.filter(
-        color => ![colors[1], colors[gameSize]].includes(color)
-      )[0];
+        React.useEffect(() => {
+          setTimeout(() => {
+            const randomEmojiCode = Math.floor(Math.random() * lastEmojiCode) + firstEmojiCode;
+            setEmojiList([...emojiList, randomEmojiCode]);
+          }, 1000);
+        }, [emojiList]);
 
-      markedTiles[0] = true;
-
-      let selectedColor = colors[0];
-
-      const colorsContainer = document.querySelector('#colors');
-      const grid = document.querySelector('#grid');
-      let counter = 0;
-      const counterNumberElement = document.querySelector('#counter-number');
-      const tiles = [];
-
-      colors.forEach((color, index) => {
-        const tile = document.createElement('div');
-        tile.style = `
-          background-color: ${color};
-          line-height: 30px;
-          text-align: center;
-        `;
-        tiles.push(tile);
-        grid.appendChild(tile);
-      });
-
-      tiles[0].innerHTML = '🍺';
-
-      console.log('marked tiles', markedTiles.filter(v => v).length);
-
-      availableColors.forEach(color => {
-        const colorOption = document.createElement('div');
-        colorOption.style = `
-          background-color: ${color};
-          width: 100%;
-          height: 100%;
-          cursor: pointer;
-        `;
-        colorOption.addEventListener('click', () => {
-          counter++;
-          counterNumberElement.innerHTML = counter;
-
-          if (selectedColor !== color) {
-            selectedColor = color;
-            markedTiles.forEach((marked, index) => {
-              const isMarked =
-                marked ||
-                (((markedTiles[index + 1] && (index + 1) % gameSize) ||
-                  (markedTiles[index - 1] && index % gameSize) ||
-                  markedTiles[index + gameSize] ||
-                  markedTiles[index - gameSize]) &&
-                  selectedColor === colors[index]);
-
-              if (isMarked) {
-                markedTiles[index] = true;
-                tiles[index].innerHTML = '🍺';
-                tiles[index].style['background-color'] = color;
-              }
-            });
-          }
-          console.log('marked tiles', markedTiles.filter(v => v).length);
-
-          if (markedTiles.filter(v => v).length === tiles.length) {
-          }
-        });
-        colorsContainer.appendChild(colorOption);
-      });
-
+        return (
+          <div>{emojiList.map(emojiCode => <p>{`&#${emojiCode};`}</p>)}</div>
+        )
+      }
+      
+      ReactDOM.render(
+        <RandomEmojiScreen />,
+        document.getElementById('container')
+      );
     </script>
+
   </body>
 </html>
