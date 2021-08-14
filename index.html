@@ -1,46 +1,85 @@
-
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>mtscrb</title>
-    <style>
-      body {
-        /* text-align: center; */
-        font-size: 33px;
+
+<head>
+  <meta charset="UTF-8">
+  <title>mtscrb</title>
+  <style>
+    body {
+      display: flex;
+      /* text-align: center; */
+      /* font-size: 33px; */
+      background-color:slategray;
+    }
+    #container {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    .emoji-item {
+      display: flex;
+      flex-direction: row;
+      border: 1px solid black;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="container"></div>
+
+  <script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+  <script type="text/javascript" language="javascript" src="emojis.js"></script> 
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <script type="text/babel">
+
+    let randomEmojiList = [];
+    setInterval(() => {
+      const randomEmojiIndex = Math.floor(Math.random() * EMOJIS.length);
+      const newEmoji = EMOJIS[randomEmojiIndex];
+      const emojiDataIndex = randomEmojiList.findIndex(e => e.value === newEmoji);
+      if (emojiDataIndex >= 0) {
+        randomEmojiList[emojiDataIndex].counter++;
+      } else {
+        randomEmojiList = [...randomEmojiList, {
+          value: newEmoji,
+          counter: 1
+        }]
       }
-    </style>
-  </head>
-  <body>
-    <div id="container"></div>
+    }, 2);
 
-    <script src="https://unpkg.com/react@17.0.2/cjs/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@17.0.2/cjs/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script type="text/babel">
-      const firstEmojiCode = 8986;
-      const lastEmojiCode = 129510;
+    const EmojiItem = ({ value, counter }) => 
+      <div className="emoji-item" style={{'font-size': `${16+(counter*5)}px`}}>
+        <span>{value}</span>
+        { counter > 1 ? 
+            <span>{counter}</span> : null
+        }
+      </div>
 
-      const RandomEmojiScreen = () => {
-        const [emojiList, setEmojiList] = React.useState()
+    const RandomEmojiScreen = () => {
+      const [emojiList, setEmojiList] = React.useState([]);
 
-        React.useEffect(() => {
-          setTimeout(() => {
-            const randomEmojiCode = Math.floor(Math.random() * lastEmojiCode) + firstEmojiCode;
-            setEmojiList([...emojiList, randomEmojiCode]);
-          }, 1000);
-        }, [emojiList]);
+      React.useEffect(() => {
+        setTimeout(() => {
+          setEmojiList(randomEmojiList);
+        }, 1000);
+      }, [emojiList]);
 
-        return (
-          <div>{emojiList.map(emojiCode => <p>{`&#${emojiCode};`}</p>)}</div>
-        )
-      }
-      
-      ReactDOM.render(
-        <RandomEmojiScreen />,
-        document.getElementById('container')
-      );
-    </script>
+      return (
+        <React.Fragment>
+          {emojiList.map(emojiData => <EmojiItem {...emojiData} />)}
+        </React.Fragment>
+      )
+    }
 
-  </body>
+
+    ReactDOM.render(
+      <RandomEmojiScreen />,
+      document.getElementById('container')
+    );
+  </script>
+
+</body>
+
 </html>
